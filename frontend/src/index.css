@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base
+{
+  body {
+    @apply bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen;
+  }
+}
+
+@layer components
+{
+  .genre-fantasy {
+    @apply bg-gradient-to-br from-fantasy-900 via-purple-900 to-fantasy-500;
+  }
+  
+  .genre-sci-fi {
+    @apply bg-gradient-to-br from-sci-fi-900 via-blue-900 to-sci-fi-500;
+  }
+  
+  .genre-steampunk {
+    @apply bg-gradient-to-br from-steampunk-900 via-amber-900 to-steampunk-500;
+  }
+  
+  .card-glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl;
+  }
+  
+  .btn-primary {
+    @apply px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all duration-200;
+  }
+}
