@@ -1,5 +1,5 @@
 {
-  "name": "storyworld-generator",
+  "name": "storyworld-generator", 
   "version": "1.0.0", 
   "type": "module",
   "scripts": {
