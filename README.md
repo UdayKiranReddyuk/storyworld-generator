@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Storyworld Generator
 
 A full-stack web application that generates fictional worlds with characters, locations, story arcs, dialogues, and art prompts based on user input.
@@ -393,4 +392,3 @@ storyworld-generator/
         ├── main.jsx
         ├── App.jsx
         └── index.css
->>>>>>> 81965c19a440e7736f2962c03e7391a639afab7e
