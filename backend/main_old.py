@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, status, Request
+from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings
@@ -11,7 +11,8 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy import create_engine, Column, String, Text, DateTime, Integer
-from sqlalchemy.orm import declarative_base, sessionmaker, Session
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
 import os
 from dotenv import load_dotenv
 
@@ -31,8 +32,6 @@ logger = logging.getLogger(__name__)
 
 # Settings
 class Settings(BaseSettings):
-    model_config = {"env_file": ".env"}
-    
     app_name: str = "Storyworld Generator API"
     version: str = "1.0.0"
     debug: bool = False
@@ -41,6 +40,9 @@ class Settings(BaseSettings):
     port: int = 8000
     rate_limit: str = "10/minute"
     database_url: str = "sqlite:///./storyworld.db"
+    
+    class Config:
+        env_file = ".env"
 
 settings = Settings()
 
@@ -446,7 +448,7 @@ def generate_art_prompts(world: StoryWorld, genre: str, count: int = 5) -> List[
 
 @app.post("/generate-world", response_model=StoryWorld, status_code=status.HTTP_201_CREATED)
 @limiter.limit(settings.rate_limit)
-async def generate_storyworld(request: Request, story_request: StoryRequest, db: Session = Depends(get_db)):
+async def generate_storyworld(request: StoryRequest, db: Session = Depends(get_db)):
     """
     Generate a new story world based on the provided parameters.
     
@@ -455,28 +457,28 @@ async def generate_storyworld(request: Request, story_request: StoryRequest, db:
     - **complexity**: The complexity level (simple, medium, or complex)
     """
     try:
-        logger.info(f"Generating story world: theme='{story_request.theme}', genre='{story_request.genre}', complexity='{story_request.complexity}'")
+        logger.info(f"Generating story world: theme='{request.theme}', genre='{request.genre}', complexity='{request.complexity}'")
         
         # Get complexity multipliers
-        multipliers = get_complexity_multiplier(story_request.complexity)
+        multipliers = get_complexity_multiplier(request.complexity)
         
         # Generate world title and summary
-        world_name = generate_world_name(story_request.genre)
-        settings_list = WORLD_TEMPLATES.get(story_request.genre, {}).get('settings', ['mysterious land'])
-        conflicts_list = WORLD_TEMPLATES.get(story_request.genre, {}).get('conflicts', ['ancient forces clash'])
-        summary = f"A {story_request.theme} set in a {random.choice(settings_list)} where {random.choice(conflicts_list)}."
+        world_name = generate_world_name(request.genre)
+        settings_list = WORLD_TEMPLATES.get(request.genre, {}).get('settings', ['mysterious land'])
+        conflicts_list = WORLD_TEMPLATES.get(request.genre, {}).get('conflicts', ['ancient forces clash'])
+        summary = f"A {request.theme} set in a {random.choice(settings_list)} where {random.choice(conflicts_list)}."
         
         # Generate characters
         characters = []
         roles = [arch["role"] for arch in CHARACTER_ARCHETYPES[:multipliers["characters"]]]
         for role in roles:
-            characters.append(generate_character(role, story_request.genre))
+            characters.append(generate_character(role, request.genre))
         
         # Generate locations
-        locations = generate_locations(story_request.genre, multipliers["locations"])
+        locations = generate_locations(request.genre, multipliers["locations"])
         
         # Generate story arc
-        story_arc = generate_story_arc(story_request.theme, story_request.genre, story_request.complexity)
+        story_arc = generate_story_arc(request.theme, request.genre, request.complexity)
         
         # Generate dialogues
         dialogues = generate_dialogues(characters, multipliers["dialogues"])
@@ -485,24 +487,24 @@ async def generate_storyworld(request: Request, story_request: StoryRequest, db:
         temp_world = StoryWorld(
             title=world_name,
             summary=summary,
-            theme=story_request.theme,
-            genre=story_request.genre,
-            complexity=story_request.complexity,
+            theme=request.theme,
+            genre=request.genre,
+            complexity=request.complexity,
             characters=characters,
             locations=locations,
             story_arc=story_arc,
             dialogues=dialogues,
             art_prompts=[]
         )
-        art_prompts = generate_art_prompts(temp_world, story_request.genre, multipliers["characters"] + multipliers["locations"])
+        art_prompts = generate_art_prompts(temp_world, request.genre, multipliers["characters"] + multipliers["locations"])
         
         # Create final world object
         world = StoryWorld(
             title=world_name,
             summary=summary,
-            theme=story_request.theme,
-            genre=story_request.genre,
-            complexity=story_request.complexity,
+            theme=request.theme,
+            genre=request.genre,
+            complexity=request.complexity,
             characters=characters,
             locations=locations,
             story_arc=story_arc,
@@ -549,7 +551,7 @@ async def generate_storyworld(request: Request, story_request: StoryRequest, db:
 
 @app.get("/worlds", response_model=List[StoryWorld])
 @limiter.limit("20/minute")
-async def get_worlds(request: Request, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+async def get_worlds(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     """
     Retrieve a list of generated story worlds.
     
@@ -587,7 +589,7 @@ async def get_worlds(request: Request, skip: int = 0, limit: int = 10, db: Sessi
 
 @app.get("/worlds/{world_id}", response_model=StoryWorld)
 @limiter.limit("20/minute")
-async def get_world(request: Request, world_id: int, db: Session = Depends(get_db)):
+async def get_world(world_id: int, db: Session = Depends(get_db)):
     """
     Retrieve a specific story world by ID.
     """
@@ -626,7 +628,7 @@ async def get_world(request: Request, world_id: int, db: Session = Depends(get_d
 
 @app.delete("/worlds/{world_id}", status_code=status.HTTP_204_NO_CONTENT)
 @limiter.limit("10/minute")
-async def delete_world(request: Request, world_id: int, db: Session = Depends(get_db)):
+async def delete_world(world_id: int, db: Session = Depends(get_db)):
     """
     Delete a story world by ID.
     """

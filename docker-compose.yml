@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: storyworld-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=Storyworld Generator API
+      - VERSION=1.0.0
+      - DEBUG=False
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - HOST=0.0.0.0
+      - PORT=8000
+      - RATE_LIMIT=10/minute
+      - DATABASE_URL=sqlite:///./storyworld.db
+    volumes:
+      - ./backend:/app
+      - backend-data:/app/data
+    networks:
+      - storyworld-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: storyworld-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - storyworld-network
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  storyworld-network:
+    driver: bridge
+
+volumes:
+  backend-data:
