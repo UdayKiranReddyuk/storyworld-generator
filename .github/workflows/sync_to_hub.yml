@@ -1,0 +1,28 @@
+name: Sync to Hugging Face Hub
+
+# TRIGGER: This says "Run this script only when code is pushed to the 'main' branch"
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      # STEP A: Download your code
+      # This downloads your GitHub repo to the temporary server running this action.
+      # "fetch-depth: 0" means "get the entire history", which is required for syncing.
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true  # This ensures large files (like images/models) are handled correctly
+
+      # STEP B: The Push Command
+      # This is the command that actually sends files to Hugging Face.
+      - name: Push to hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}  # This pulls the secret key you saved in Step 2
+        run: |
+          # This command pushes your code to the Hugging Face remote URL.
+          # We inject your username and the secret token directly into the URL to authenticate.
+          git push https://udaykiran99:$HF_TOKEN@huggingface.co/spaces/udaykiran99/storyworld-generator main
