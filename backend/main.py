@@ -14,6 +14,15 @@ from sqlalchemy import create_engine, Column, String, Text, DateTime, Integer
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 import os
 from dotenv import load_dotenv
+#=======
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware 
+from pydantic import BaseModel
+from typing import List, Dict, Any
+import json
+import random 
+from datetime import datetime 
+
 
 # Load environment variables
 load_dotenv()
@@ -675,5 +684,9 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
+#<<<<<<< HEAD
     logger.info(f"Starting {settings.app_name} v{settings.version}")
     uvicorn.run(app, host=settings.host, port=settings.port)
+#=======
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+#>>>>>>> 81965c19a440e7736f2962c03e7391a639afab7e

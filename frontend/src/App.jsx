@@ -5,7 +5,7 @@ import WorldDisplay from './components/WorldDisplay';
 import ErrorMessage from './components/ErrorMessage';
 
 function App() {
-  const [theme, setTheme] = useState('');
+  const [theme, setTheme] = useState(''); 
   const [genre, setGenre] = useState('fantasy');
   const [complexity, setComplexity] = useState('medium');
   const [world, setWorld] = useState(null);

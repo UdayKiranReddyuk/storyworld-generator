@@ -19,6 +19,8 @@
 
   ::-webkit-scrollbar-thumb {
     @apply bg-gray-700 rounded-full hover:bg-gray-600 transition-colors;
+
+    @apply bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen; 
   }
 }
 
