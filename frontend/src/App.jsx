@@ -90,7 +90,7 @@ function App() {
         {world && (
           <WorldDisplay
             world={world}
-            genre={genre}
+            genre={world.genre}
             activeTab={activeTab}
             onTabChange={setActiveTab}
             onNewWorld={handleNewWorld}

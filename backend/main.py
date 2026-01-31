@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 from typing import List, Dict, Any, Optional
 import json
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -63,7 +63,7 @@ class StoryWorldDB(Base):
     story_arc = Column(Text)  # JSON string
     dialogues = Column(Text)  # JSON string
     art_prompts = Column(Text)  # JSON string
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -671,7 +671,7 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
+    return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 if __name__ == "__main__":
     import uvicorn

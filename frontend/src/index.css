@@ -2,36 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base
-{
+@layer base {
   body {
-    @apply bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen;
+    @apply bg-gray-900 text-white min-h-screen antialiased overflow-x-hidden;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-700 rounded-full hover:bg-gray-600 transition-colors;
   }
 }
 
-@layer components
-{
+@layer components {
   .genre-fantasy {
-    @apply bg-gradient-to-br from-fantasy-900 via-purple-900 to-fantasy-500;
+    @apply bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900 via-gray-900 to-gray-950;
   }
   
   .genre-sci-fi {
-    @apply bg-gradient-to-br from-sci-fi-900 via-blue-900 to-sci-fi-500;
+    @apply bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900 via-gray-900 to-gray-950;
   }
   
   .genre-steampunk {
-    @apply bg-gradient-to-br from-steampunk-900 via-amber-900 to-steampunk-500;
+    @apply bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900 via-gray-900 to-gray-950;
   }
   
   .card-glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl;
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl;
+  }
+
+  .card-glass-hover {
+    @apply hover:bg-white/10 hover:border-white/20 transition-all duration-300;
   }
   
   .btn-primary {
-    @apply px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95;
+    @apply px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0;
   }
   
   .btn-secondary {
-    @apply px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all duration-200;
+    @apply px-6 py-3 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl border border-white/10 transition-all duration-300 backdrop-blur-sm;
   }
+
+  .input-glass {
+    @apply w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300;
+  }
+
+  .label-text {
+    @apply block text-sm font-medium text-gray-300 mb-2 ml-1;
+  }
+}
+
+/* Animation Utilities */
+.animate-delay-100 {
+  animation-delay: 100ms;
+}
+.animate-delay-200 {
+  animation-delay: 200ms;
+}
+.animate-delay-300 {
+  animation-delay: 300ms;
 }

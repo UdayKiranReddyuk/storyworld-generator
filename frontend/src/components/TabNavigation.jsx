@@ -15,17 +15,18 @@ function TabNavigation({ activeTab, onTabChange }) {
     <div className="flex flex-wrap gap-2 justify-center">
       {tabs.map((tab) => {
         const Icon = tab.icon;
+        const isActive = activeTab === tab.id;
         return (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-              activeTab === tab.id
-                ? 'bg-white/20 text-white'
-                : 'text-gray-300 hover:text-white hover:bg-white/10'
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all duration-300 font-medium text-sm md:text-base ${
+              isActive
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25 scale-105'
+                : 'text-gray-400 hover:text-white hover:bg-white/10'
             }`}
           >
-            <Icon size={18} />
+            <Icon size={18} className={isActive ? 'animate-pulse-slow' : ''} />
             {tab.label}
           </button>
         );
